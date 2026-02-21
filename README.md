@@ -1,0 +1,99 @@
+# VecGrep
+
+Cursor-style semantic code search as an MCP plugin for Claude Code.
+
+Instead of grepping 50 files and sending 30,000 tokens to Claude, VecGrep returns the top 8 semantically relevant code chunks (~1,600 tokens). That's a **~95% token reduction** for codebase queries.
+
+## How it works
+
+1. **Chunk** — Parses source files with tree-sitter to extract semantic units (functions, classes, methods)
+2. **Embed** — Encodes each chunk locally using `all-MiniLM-L6-v2` (384-dim, ~80MB one-time download)
+3. **Store** — Saves embeddings + metadata in SQLite under `~/.vecgrep/<project_hash>/`
+4. **Search** — Cosine similarity over all embeddings returns the most relevant snippets
+
+Incremental re-indexing via SHA256 file hashing skips unchanged files.
+
+## Installation
+
+Requires [uv](https://docs.astral.sh/uv/).
+
+```bash
+git clone https://github.com/yourname/vecgrep
+cd vecgrep
+uv sync
+```
+
+## Claude Code integration
+
+Add to your Claude Code MCP settings (`~/.claude/claude_desktop_config.json` or via `claude mcp add`):
+
+```json
+{
+  "mcpServers": {
+    "vecgrep": {
+      "command": "uv",
+      "args": ["--directory", "/path/to/VecGrep", "run", "vecgrep"]
+    }
+  }
+}
+```
+
+Or with the CLI:
+
+```bash
+claude mcp add vecgrep -- uv --directory /path/to/VecGrep run vecgrep
+```
+
+## Tools
+
+### `index_codebase(path, force=False)`
+
+Index a project directory. Skips unchanged files on subsequent calls.
+
+```
+index_codebase("/path/to/myproject")
+# → "Indexed 142 file(s), 1847 chunk(s) added (0 file(s) skipped, unchanged)"
+```
+
+### `search_code(query, path, top_k=8)`
+
+Semantic search. Auto-indexes if no index exists.
+
+```
+search_code("how does user authentication work", "/path/to/myproject")
+```
+
+Returns formatted snippets with file paths, line numbers, and similarity scores:
+
+```
+[1] src/auth.py:45-72 (score: 0.87)
+def authenticate_user(token: str) -> User:
+    ...
+
+[2] src/middleware.py:12-28 (score: 0.81)
+...
+```
+
+### `get_index_status(path)`
+
+Check index statistics.
+
+```
+Index status for: /path/to/myproject
+  Files indexed:  142
+  Total chunks:   1847
+  Last indexed:   2026-02-22T07:20:31+00:00
+  Index size:     28.4 MB
+```
+
+## Supported languages
+
+Python, JavaScript/TypeScript, Rust, Go, Java, C/C++, Ruby, Swift, Kotlin, C#
+
+All other text files fall back to sliding-window line chunks.
+
+## Index location
+
+`~/.vecgrep/<sha256-of-project-path>/index.db`
+
+Each project gets its own isolated index. Delete the directory to wipe the index.
