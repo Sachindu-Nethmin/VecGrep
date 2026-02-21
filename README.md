@@ -1,5 +1,8 @@
 # VecGrep
 
+[![CI](https://github.com/iamvirul/VecGrep/actions/workflows/ci.yml/badge.svg)](https://github.com/iamvirul/VecGrep/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/iamvirul/VecGrep/branch/main/graph/badge.svg)](https://codecov.io/gh/iamvirul/VecGrep)
+
 Cursor-style semantic code search as an MCP plugin for Claude Code.
 
 Instead of grepping 50 files and sending 30,000 tokens to Claude, VecGrep returns the top 8 semantically relevant code chunks (~1,600 tokens). That's a **~95% token reduction** for codebase queries.
