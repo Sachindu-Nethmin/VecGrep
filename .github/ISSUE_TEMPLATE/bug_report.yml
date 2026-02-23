@@ -1,0 +1,91 @@
+name: "🐛 Bug Report"
+description: Report a bug or unexpected behavior in VecGrep
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below so we can reproduce and fix it.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen instead?
+      placeholder: |
+        When I run `search_code("auth", "/my/project")`, I get ...
+        I expected it to return ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal steps to reproduce the issue.
+      placeholder: |
+        1. Index a project with `index_codebase("/path/to/project")`
+        2. Run `search_code("query", "/path/to/project")`
+        3. Observe the error
+    validations:
+      required: true
+
+  - type: input
+    id: vecgrep-version
+    attributes:
+      label: VecGrep Version
+      description: "Run `vecgrep --version` or check `pip show vecgrep`"
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python Version
+      description: "Run `python --version`"
+      placeholder: "3.12.x"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - macOS
+        - Linux
+        - Windows
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: Installation Method
+      options:
+        - uv tool install
+        - pip install
+        - From source (uv sync)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Error Output
+      description: Paste any relevant error messages or logs.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other information that might be helpful (screenshots, related issues, etc.)
+    validations:
+      required: false
